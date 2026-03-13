@@ -18,9 +18,10 @@ import java.time.LocalDateTime;
 public class Resident {
 
     @Id
+    @Column(length = 50)
     private String id;
 
-    @Column(name = "community_id", nullable = false)
+    @Column(name = "community_id", nullable = false, length = 50)
     private String communityId;
 
     @Column(name = "first_name", nullable = false)

@@ -16,12 +16,13 @@ import java.time.LocalDateTime;
 public class Observation {
 
     @Id
+    @Column(length = 50)
     private String id;
 
-    @Column(name = "resident_id", nullable = false)
+    @Column(name = "resident_id", nullable = false, length = 50)
     private String residentId;
 
-    @Column(name = "community_id", nullable = false)
+    @Column(name = "community_id", nullable = false, length = 50)
     private String communityId;
 
     private String type;

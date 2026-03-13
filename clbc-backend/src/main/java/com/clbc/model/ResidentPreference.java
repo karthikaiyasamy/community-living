@@ -19,10 +19,10 @@ public class ResidentPreference {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "resident_id", nullable = false)
+    @Column(name = "resident_id", nullable = false, length = 50)
     private String residentId;
 
-    @Column(name = "community_id", nullable = false)
+    @Column(name = "community_id", nullable = false, length = 50)
     private String communityId;
 
     @Column(name = "dietary_preferences")

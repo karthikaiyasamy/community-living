@@ -22,6 +22,7 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id
+    @Column(length = 50)
     private String id;
 
     @Column(unique = true, nullable = false)
@@ -34,7 +35,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private UserRole role;
 
-    @Column(name = "community_id")
+    @Column(name = "community_id", length = 50)
     private String communityId;
 
     @Enumerated(EnumType.STRING)

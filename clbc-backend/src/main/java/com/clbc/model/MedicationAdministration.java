@@ -21,10 +21,10 @@ public class MedicationAdministration {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "prescription_id", nullable = false)
+    @Column(name = "prescription_id", nullable = false, length = 50)
     private String prescriptionId;
 
-    @Column(name = "community_id", nullable = false)
+    @Column(name = "community_id", nullable = false, length = 50)
     private String communityId;
 
     @Column(name = "date_administered", nullable = false)

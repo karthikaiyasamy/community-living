@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class SystemClient {
 
     @Id
+    @Column(length = 50)
     private String id;
 
     @Column(name = "client_name", nullable = false)
@@ -24,7 +25,7 @@ public class SystemClient {
     @Column(name = "client_secret_hash", nullable = false)
     private String clientSecretHash;
 
-    @Column(name = "community_id", nullable = false)
+    @Column(name = "community_id", nullable = false, length = 50)
     private String communityId;
 
     @Column(name = "created_at", updatable = false)
