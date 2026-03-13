@@ -21,6 +21,37 @@ The project **requires** environment variables for sensitive configuration like 
    ```
 2. Update the values in `.env` with your local settings.
 
+### Database Setup
+
+The application uses two MySQL databases: `clbc_main` and `clbc_audit`. You must manually create these and initialize the schema before running the application.
+
+1. **Create Databases and User:**
+   ```sql
+   CREATE DATABASE clbc_main;
+   CREATE DATABASE clbc_audit;
+   CREATE USER 'cladmin'@'localhost' IDENTIFIED BY 'your_password';
+   GRANT ALL PRIVILEGES ON clbc_main.* TO 'cladmin'@'localhost';
+   GRANT ALL PRIVILEGES ON clbc_audit.* TO 'cladmin'@'localhost';
+   FLUSH PRIVILEGES;
+   ```
+
+2. **Initialize Schema:**
+   Run the following SQL scripts from the `clbc-backend/src/main/resources/sql` directory against the `clbc_main` database:
+   - `01_global_tables.sql`
+   - `02_tenant_tables.sql`
+   - `04_indexes.sql`
+   - `05_seed_data.sql`
+
+   Against the `clbc_audit` database:
+   - `03_audit_tables.sql`
+
+### Initial Credentials
+
+Once the seed data is loaded, you can log in with:
+
+- **Nurse:** `nurse@rose.com` / `password123`
+- **Manager:** `manager@rose.com` / `password123`
+
 ## How to Run
 
 ### 1. Start the Backend (Spring Boot)

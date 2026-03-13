@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ClbcBackendApplication {
 
-	public static void main(String[] args) {
+	static {
 		Dotenv dotenv = Dotenv.configure()
 				.directory("..")
 				.ignoreIfMalformed()
@@ -19,7 +19,9 @@ public class ClbcBackendApplication {
 				System.setProperty(entry.getKey(), entry.getValue());
 			}
 		});
+	}
 
+	public static void main(String[] args) {
 		SpringApplication.run(ClbcBackendApplication.class, args);
 	}
 }
