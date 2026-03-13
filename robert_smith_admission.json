@@ -1,0 +1,71 @@
+{
+    "resourceType": "Bundle",
+    "type": "collection",
+    "entry": [
+        {
+            "resource": {
+                "resourceType": "Patient",
+                "id": "hosp-pat-123",
+                "identifier": [
+                    {
+                        "system": "http://hospital.org/mrn",
+                        "value": "MRN778899",
+                        "type": {
+                            "text": "MRN"
+                        }
+                    }
+                ],
+                "name": [
+                    {
+                        "family": "Smith",
+                        "given": [
+                            "Robert"
+                        ]
+                    }
+                ],
+                "gender": "male",
+                "birthDate": "1960-12-15"
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "Condition",
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active"
+                        }
+                    ]
+                },
+                "code": {
+                    "text": "Hypertension"
+                },
+                "subject": {
+                    "reference": "Patient/hosp-pat-123"
+                }
+            }
+        },
+        {
+            "resource": {
+                "resourceType": "MedicationRequest",
+                "status": "active",
+                "intent": "order",
+                "medicationCodeableConcept": {
+                    "text": "Amlodipine 5mg"
+                },
+                "subject": {
+                    "reference": "Patient/hosp-pat-123"
+                },
+                "requester": {
+                    "display": "Dr. Sarah Jenkins"
+                },
+                "dosageInstruction": [
+                    {
+                        "text": "Take once daily in the morning"
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+# Environment Variables
+.env
+.env.local
+
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.tar.gz
+.mvn/wrapper/maven-wrapper.jar
+
+# IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+.springBeans
+.sts4-cache
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+
+# OS
+.DS_Store
+Thumbs.db

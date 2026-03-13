@@ -1,0 +1,43 @@
+package com.clbc.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "allergies")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Allergy {
+
+    @Id
+    private String id;
+
+    @Column(name = "resident_id", nullable = false)
+    private String residentId;
+
+    @Column(name = "community_id", nullable = false)
+    private String communityId;
+
+    @Column(nullable = false)
+    private String allergen;
+
+    private String severity;
+    private String reaction;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        if (id == null) {
+            id = java.util.UUID.randomUUID().toString();
+        }
+    }
+}
