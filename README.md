@@ -21,15 +21,44 @@ The project **requires** environment variables for sensitive configuration like 
    ```
 2. Update the values in `.env` with your local settings.
 
-#### Spring Boot (Backend)
+## How to Run
 
-The backend in `clbc-backend` will automatically pick up environment variables. You can also pass them as JVM arguments if needed (e.g., `-DDB_PASSWORD=your_password`). **Note: `DB_PASSWORD` and `JWT_SECRET` are now mandatory.**
+### 1. Start the Backend (Spring Boot)
 
-#### Data Population Script
+The backend provides the API and handles data logic.
 
-The `populate_clinical_data.py` script also requires these environment variables:
 ```bash
-export DB_PASSWORD=your_password
+# Navigate to the backend directory
+cd clbc-backend
+
+# Run the application using the Maven wrapper
+./mvnw spring-boot:run
+```
+*Note: Ensure your `.env` file is ready in the root directory as described in the Configuration section.*
+
+### 2. Start the Frontend (Vue.js + Vite)
+
+The frontend is a modern web application built with Vue.
+
+```bash
+# Navigate to the frontend directory
+cd clbc-frontend
+
+# Install dependencies (only required the first time)
+npm install
+
+# Start the development server
+npm run dev
+```
+Once started, the terminal will give you a local URL (usually `http://localhost:5173`) to open in your browser.
+
+### 3. (Optional) Populate Sample Data
+
+If you need to seed your database with sample clinical records:
+
+```bash
+# In the root directory
+export DB_PASSWORD=your_password  # If not already set in your shell
 python populate_clinical_data.py
 ```
 
