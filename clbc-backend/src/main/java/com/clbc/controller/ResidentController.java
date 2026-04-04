@@ -43,6 +43,20 @@ public class ResidentController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/transfer")
+    public ResponseEntity<Void> transferResident(
+            @PathVariable String id,
+            @RequestBody ResidentDTO dto) {
+        residentService.transferResident(id, dto.getTransferredTo(), dto.getIsLocationWithheld());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/archive")
+    public ResponseEntity<Void> archiveResident(@PathVariable String id) {
+        residentService.archiveResident(id);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/{id}/activate")
     public ResponseEntity<Void> activateResident(@PathVariable String id) {
         residentService.activateResident(id);

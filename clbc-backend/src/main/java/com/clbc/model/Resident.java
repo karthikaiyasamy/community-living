@@ -47,6 +47,13 @@ public class Resident {
     @Enumerated(EnumType.STRING)
     private ResidentStatus status;
 
+    @Column(name = "transferred_to")
+    private String transferredTo;
+
+    @Column(name = "is_location_withheld")
+    @Builder.Default
+    private Boolean isLocationWithheld = false;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -67,6 +74,6 @@ public class Resident {
     }
 
     public enum ResidentStatus {
-        ACTIVE, INACTIVE, DISCHARGED, RECEIVED
+        ACTIVE, INACTIVE, DISCHARGED, RECEIVED, TRANSFERRED, ARCHIVED
     }
 }

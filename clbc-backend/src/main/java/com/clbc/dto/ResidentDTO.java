@@ -22,4 +22,6 @@ public class ResidentDTO {
     private String primaryPhysician;
     private String physicianContact;
     private String status;
+    private String transferredTo;
+    private Boolean isLocationWithheld;
 }

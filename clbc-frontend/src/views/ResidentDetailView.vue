@@ -22,6 +22,12 @@ const loading = ref(true);
 const uploading = ref(false);
 const recordingAdmin = ref(false);
 const savingPreferences = ref(false);
+const processingAction = ref(false);
+const showTransferModal = ref(false);
+const transferForm = ref({
+  transferredTo: '',
+  isLocationWithheld: false
+});
 // Local toast refs removed in favor of global store
 
 const vitalTypes = [
@@ -193,6 +199,58 @@ const savePreferences = async () => {
     savingPreferences.value = false;
   }
 };
+
+const handleTransfer = async () => {
+  if (!transferForm.value.transferredTo) {
+    notificationStore.error('Please specify the destination');
+    return;
+  }
+  
+  processingAction.value = true;
+  try {
+    await api.post(`/residents/${residentId}/transfer`, transferForm.value);
+    showTransferModal.value = false;
+    notificationStore.success('Resident transfer record updated');
+    fetchData(); // Refresh to show new status
+  } catch (error) {
+    console.error('Transfer failed:', error);
+    notificationStore.error('Failed to update transfer status');
+  } finally {
+    processingAction.value = false;
+  }
+};
+
+const handleArchive = async () => {
+  if (!confirm('Are you sure you want to archive this clinical record? The resident will be moved to ARCHIVED status.')) return;
+  
+  processingAction.value = true;
+  try {
+    await api.post(`/residents/${residentId}/archive`);
+    notificationStore.success('Resident record archived');
+    fetchData();
+  } catch (error) {
+    console.error('Archive failed:', error);
+    notificationStore.error('Failed to archive record');
+  } finally {
+    processingAction.value = false;
+  }
+};
+
+const handleDischarge = async () => {
+  if (!confirm('Are you sure you want to discharge this resident?')) return;
+  
+  processingAction.value = true;
+  try {
+    await api.delete(`/residents/${residentId}`);
+    notificationStore.success('Resident discharged successfully');
+    fetchData();
+  } catch (error) {
+    console.error('Discharge failed:', error);
+    notificationStore.error('Failed to process discharge');
+  } finally {
+    processingAction.value = false;
+  }
+};
 </script>
 
 <template>
@@ -212,10 +270,13 @@ const savePreferences = async () => {
             <p>{{ resident.status }} • Resident ID: {{ resident.id }}</p>
           </div>
        </div>
-       <div class="header-right">
-         <button class="btn btn-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            Edit Profile
+       <div class="header-right action-group">
+         <button class="btn btn-outline btn-sm" @click="handleDischarge" :disabled="processingAction">Discharge</button>
+         <button class="btn btn-outline btn-sm" @click="showTransferModal = true" :disabled="processingAction">Transfer</button>
+         <button class="btn btn-outline btn-sm" @click="handleArchive" :disabled="processingAction">Archive</button>
+         <button class="btn btn-primary btn-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Edit
          </button>
        </div>
     </div>
@@ -251,6 +312,12 @@ const savePreferences = async () => {
               <div class="info-row">
                 <span class="label">Physician Contact</span>
                 <span class="value">{{ resident.physicianContact || 'N/A' }}</span>
+              </div>
+              <div v-if="resident.status === 'TRANSFERRED'" class="info-row highlight-row">
+                <span class="label">Transferred To</span>
+                <span class="value">
+                  {{ resident.isLocationWithheld ? 'WITHHELD (Privacy Filter Active)' : (resident.transferredTo || 'Unknown Location') }}
+                </span>
               </div>
            </div>
            
@@ -464,6 +531,41 @@ const savePreferences = async () => {
       </div>
     </div>
   </div>
+  
+  <!-- Transfer Resident Modal -->
+  <div v-if="showTransferModal" class="modal-overlay" @click.self="showTransferModal = false">
+    <div class="modal-content glass animate-fade-in">
+      <div class="modal-header">
+        <h2>Transfer Resident</h2>
+        <button class="close-btn" @click="showTransferModal = false">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <p class="instr-text">Update the clinical status of the resident to TRANSFERRED. Please specify the destination facility or reason for transfer.</p>
+        
+        <div class="form-group mb-4">
+          <label>Transfer Destination</label>
+          <input v-model="transferForm.transferredTo" type="text" placeholder="e.g. Sunny Brook Hospital, Home Care" required>
+        </div>
+        
+        <div class="form-group checkbox-group mb-4">
+          <label class="checkbox-container">
+            <input type="checkbox" v-model="transferForm.isLocationWithheld">
+            <span class="checkmark"></span>
+            Withhold location from standard view (Privacy Filter)
+          </label>
+          <p class="input-hint">The specific location will be hidden from the general overview but maintained in the clinical audit log.</p>
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button class="btn btn-secondary" @click="showTransferModal = false">Cancel</button>
+        <button class="btn btn-primary" @click="handleTransfer" :disabled="processingAction">
+          {{ processingAction ? 'Updating...' : 'Confirm Transfer' }}
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -523,6 +625,46 @@ const savePreferences = async () => {
 .slide-up-leave-to {
   transform: translateY(20px);
   opacity: 0;
+}
+
+.header-right.action-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.instr-text {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.mb-4 { margin-bottom: 24px; }
+
+.highlight-row {
+  background: var(--primary-light);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+  border: 1px dashed var(--primary);
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  user-select: none;
+}
+
+.input-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  margin-left: 28px;
 }
 
 .avatar-huge {

@@ -88,6 +88,32 @@ public class ResidentService {
     }
 
     @Transactional
+    public void transferResident(String id, String transferredTo, boolean isLocationWithheld) {
+        String communityId = TenantContext.getTenantId();
+        Resident resident = residentRepository.findByIdAndCommunityId(id, communityId)
+                .orElseThrow(() -> new RuntimeException("Resident not found"));
+        
+        resident.setStatus(Resident.ResidentStatus.TRANSFERRED);
+        resident.setTransferredTo(transferredTo);
+        resident.setIsLocationWithheld(isLocationWithheld);
+        
+        residentRepository.save(resident);
+        String details = "Transferred resident to: " + (isLocationWithheld ? "[WITHHELD]" : transferredTo);
+        auditService.logAction("TRANSFER_RESIDENT", "RESIDENT", id, details, null);
+    }
+
+    @Transactional
+    public void archiveResident(String id) {
+        String communityId = TenantContext.getTenantId();
+        Resident resident = residentRepository.findByIdAndCommunityId(id, communityId)
+                .orElseThrow(() -> new RuntimeException("Resident not found"));
+        
+        resident.setStatus(Resident.ResidentStatus.ARCHIVED);
+        residentRepository.save(resident);
+        auditService.logAction("ARCHIVE_RESIDENT", "RESIDENT", id, "Archived resident clinical record", null);
+    }
+
+    @Transactional
     public void dischargeResident(String id) {
         String communityId = TenantContext.getTenantId();
         Resident resident = residentRepository.findByIdAndCommunityId(id, communityId)
@@ -119,6 +145,8 @@ public class ResidentService {
                 .primaryPhysician(resident.getPrimaryPhysician())
                 .physicianContact(resident.getPhysicianContact())
                 .status(resident.getStatus().name())
+                .transferredTo(resident.getTransferredTo())
+                .isLocationWithheld(resident.getIsLocationWithheld())
                 .build();
     }
 }
